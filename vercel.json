@@ -1,0 +1,63 @@
+{
+  "version": 2,
+  "routes": [
+    {
+      "src": "/",
+      "dest": "/index.html"
+    },
+    {
+      "src": "/documentation",
+      "dest": "/error.html"
+    },
+    {
+      "src": "/github",
+      "dest": "/error.html"
+    },
+    {
+      "src": "/forums",
+      "dest": "/error.html"
+    },
+    {
+      "src": "/discord",
+      "dest": "/error.html"
+    },
+    {
+      "src": "/support",
+      "dest": "/error.html"
+    },
+    {
+      "src": "/issues",
+      "dest": "/error.html"
+    },
+    {
+      "src": "/contribute",
+      "dest": "/error.html"
+    },
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/error.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
+    }
+  ]
+} 

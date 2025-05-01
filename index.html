@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Equalizer APO - System-wide Audio Equalizer for Windows</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        /* Navigation */
+        nav {
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2563eb;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: #4b5563;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: #2563eb;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            background: transparent;
+            color: white;
+            padding: 8rem 0 4rem;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, #2563eb, #7c3aed, #2563eb);
+            background-size: 200% 200%;
+            animation: gradientMove 15s ease infinite;
+            z-index: -1;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.5;
+            z-index: -1;
+        }
+
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            max-width: 42rem;
+            margin: 0 auto 2rem;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .button {
+            padding: 0.75rem 2rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .button-primary {
+            background: white;
+            color: #2563eb;
+        }
+
+        .button-primary:hover {
+            background: #f3f4f6;
+        }
+
+        .button-secondary {
+            border: 1px solid white;
+            color: white;
+        }
+
+        .button-secondary:hover {
+            background: rgba(255,255,255,0.1);
+        }
+
+        /* Features Section */
+        .features {
+            padding: 5rem 0;
+            background: white;
+        }
+
+        .section-title {
+            color: #1f2937;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            background-color: white;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: box-shadow 0.2s;
+            animation: float 6s ease-in-out infinite;
+            animation-delay: calc(var(--card-index) * 0.2s);
+        }
+
+        .feature-card:hover {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: #6b7280;
+        }
+
+        /* Limitations Section */
+        .limitations {
+            padding: 5rem 0;
+            background: #f9fafb;
+        }
+
+        .limitations-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .limitations-grid {
+            max-width: 48rem;
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .limitation-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .limitation-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Footer */
+        footer {
+            background: #111827;
+            color: white;
+            padding: 3rem 0;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #374151;
+            color: #9ca3af;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .button {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        /* Floating Image Styles */
+        .floating-image {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            cursor: move;
+            user-select: none;
+            z-index: 1000;
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        .floating-image:hover {
+            transform: scale(1.1);
+        }
+
+        .floating-image:active {
+            cursor: grabbing;
+        }
+
+        /* Enhanced Scroll Reveal Styles */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            will-change: transform, opacity;
+        }
+
+        .scroll-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Add scroll-reveal class to all sections and cards */
+        .feature-card,
+        .limitation-card,
+        .step-card,
+        .community-card,
+        .button-group,
+        .section-title {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            will-change: transform, opacity;
+        }
+
+        .feature-card.active,
+        .limitation-card.active,
+        .step-card.active,
+        .community-card.active,
+        .button-group.active,
+        .section-title.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Staggered animations for cards */
+        .feature-card:nth-child(1) { transition-delay: 0.1s; }
+        .feature-card:nth-child(2) { transition-delay: 0.2s; }
+        .feature-card:nth-child(3) { transition-delay: 0.3s; }
+        .feature-card:nth-child(4) { transition-delay: 0.4s; }
+        .feature-card:nth-child(5) { transition-delay: 0.5s; }
+        .feature-card:nth-child(6) { transition-delay: 0.6s; }
+
+        .step-card:nth-child(1) { transition-delay: 0.1s; }
+        .step-card:nth-child(2) { transition-delay: 0.2s; }
+        .step-card:nth-child(3) { transition-delay: 0.3s; }
+
+        .community-card:nth-child(1) { transition-delay: 0.1s; }
+        .community-card:nth-child(2) { transition-delay: 0.2s; }
+        .community-card:nth-child(3) { transition-delay: 0.3s; }
+
+        /* Additional Content Sections */
+        .usage-guide {
+            padding: 5rem 0;
+            background: white;
+        }
+
+        .guide-steps {
+            max-width: 48rem;
+            margin: 0 auto;
+            display: grid;
+            gap: 2rem;
+        }
+
+        .step-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .step-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2563eb;
+            min-width: 3rem;
+        }
+
+        .step-content h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-content p {
+            color: #6b7280;
+        }
+
+        .community-section {
+            padding: 5rem 0;
+            background: #f9fafb;
+        }
+
+        .community-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .community-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .community-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .community-card p {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+
+        .community-card .button {
+            display: inline-block;
+        }
+
+        /* UI Preview Styles */
+        .ui-preview {
+            width: 100%;
+            opacity: 0;
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            transform: translateX(50px);
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+
+        .ui-preview.active {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .ui-preview img {
+            width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 2px solid white;
+            transition: transform 0.2s ease-out;
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        .ui-preview::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(37, 99, 235, 0.1), rgba(124, 58, 237, 0.1));
+            border-radius: 0.5rem;
+            z-index: -1;
+            transition: transform 0.2s ease-out;
+            transform-style: preserve-3d;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 1024px) {
+            .limitations-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .ui-preview {
+                max-width: 500px;
+                margin: 0 auto;
+            }
+        }
+
+        /* Floating Animation for Feature Cards */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        /* Enhanced Button Styles */
+        .button {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease-out, height 0.6s ease-out;
+        }
+
+        .button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Enhanced Feature Cards */
+        .feature-card {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(37, 99, 235, 0.1), rgba(124, 58, 237, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px) rotateX(5deg);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-card:hover::before {
+            opacity: 1;
+        }
+
+        /* Parallax Hero Section */
+        .hero {
+            position: relative;
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .hero .container {
+            position: relative;
+            z-index: 1;
+            transform: translateZ(0);
+        }
+
+        .hero::before {
+            transform: translateZ(-10px) scale(2);
+        }
+
+        /* Enhanced Navigation */
+        .nav-links a {
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #2563eb;
+            transition: width 0.3s ease;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Enhanced Step Cards */
+        .step-card {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .step-number {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .step-card:hover .step-number {
+            transform: scale(1.2);
+            color: #7c3aed;
+        }
+
+        /* Enhanced Community Cards */
+        .community-card {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .community-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(37, 99, 235, 0.1), rgba(124, 58, 237, 0.1));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .community-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .community-card:hover::before {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container nav-content">
+            <a href="/" class="logo">Equalizer APO</a>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#download">Download</a>
+                <a href="error.html">Documentation</a>
+                <a href="error.html">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>Equalizer APO</h1>
+            <p>A powerful, system-wide audio equalizer for Windows that puts you in complete control of your sound.</p>
+            <div class="button-group">
+                <a href="" class="button button-primary">Download</a> <!--download link here mr monkey--> 
+                <a href="error.html" class="button button-secondary">GitHub</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Key Features</h2>
+            <div class="feature-grid">
+                <div class="feature-card">
+                    <h3>System-wide Audio Equalization</h3>
+                    <p>Works seamlessly with any sound device that uses Windows' APO system, typically most internal sound cards.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Parametric & Graphic EQ</h3>
+                    <p>Supports both types of equalizers, giving you precise control over individual frequency bands.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Low CPU Usage</h3>
+                    <p>Efficient design allows it to run in the background with minimal performance impact on your system.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Highly Customizable</h3>
+                    <p>Configuration through plain text files allows advanced users deep control over filters and settings.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>VST Plugin Support</h3>
+                    <p>Expand your audio processing options with VST plugin support through Peace GUI or other wrappers.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>Free & Open Source</h3>
+                    <p>Completely free to use and open source, backed by a community of audio enthusiasts.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Limitations Section -->
+    <section class="limitations">
+        <div class="container">
+            <h2 class="section-title">Important Notes</h2>
+            <div class="limitations-container">
+                <div class="limitations-grid">
+                    <div class="limitation-card">
+                        <h3>GUI Interface</h3>
+                        <p>The native configuration is text-based, but you can use Peace Equalizer for a graphical interface.</p>
+                    </div>
+                    <div class="limitation-card">
+                        <h3>Device Compatibility</h3>
+                        <p>May have limited compatibility with USB, Bluetooth, or virtual audio devices unless they specifically support APOs.</p>
+                    </div>
+                </div>
+                <div class="ui-preview scroll-reveal">
+                    <img 
+                        src="assets/equalizer.png"
+                        alt="Equalizer APO Interface Preview"
+                    />
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Usage Guide Section -->
+    <section class="usage-guide scroll-reveal">
+        <div class="container">
+            <h2 class="section-title">Getting Started</h2>
+            <div class="guide-steps">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Download and Install</h3>
+                        <p>Download Equalizer APO from our official website and run the installer. Follow the setup wizard to complete the installation.</p>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Configure Your Device</h3>
+                        <p>Select your audio device in the configuration panel and enable APO support for optimal performance.</p>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Customize Your Sound</h3>
+                        <p>Use the configuration file or Peace GUI to adjust your equalizer settings according to your preferences.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Community Section -->
+    <section class="community-section scroll-reveal">
+        <div class="container">
+            <h2 class="section-title">Join Our Community</h2>
+            <div class="community-grid">
+                <div class="community-card">
+                    <h3>GitHub Repository</h3>
+                    <p>Contribute to the project, report issues, or suggest new features on our GitHub repository.</p>
+                    <a href="error.html" class="button button-primary">Visit GitHub</a>
+                </div>
+                <div class="community-card">
+                    <h3>User Forums</h3>
+                    <p>Join discussions with other users, share your configurations, and get help from the community.</p>
+                    <a href="error.html" class="button button-primary">Join Forums</a>
+                </div>
+                <div class="community-card">
+                    <h3>Discord Server</h3>
+                    <p>Connect with other users in real-time, share your experiences, and get instant support.</p>
+                    <a href="error.html" class="button button-primary">Join Discord</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-section">
+                    <h3>Equalizer APO</h3>
+                    <p>A free and open-source system-wide audio equalizer for Windows.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="https://sourceforge.net/projects/equalizerapo/files/latest/download">Download</a></li>
+                        <li><a href="error.html">Documentation</a></li>
+                        <li><a href="error.html">Support</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Community</h3>
+                    <ul class="footer-links">
+                        <li><a href="error.html">GitHub</a></li>
+                        <li><a href="error.html">Issue Tracker</a></li>
+                        <li><a href="error.html">Contribute</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; <script>document.write(new Date().getFullYear())</script> Equalizer APO. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Enhanced Scroll Reveal functionality
+        const scrollRevealElements = document.querySelectorAll('.scroll-reveal, .feature-card, .limitation-card, .step-card, .community-card, .button-group, .section-title, .ui-preview');
+        let lastScrollY = window.scrollY;
+        let ticking = false;
+
+        function updateScroll() {
+            scrollRevealElements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                const elementBottom = element.getBoundingClientRect().bottom;
+
+                // Only reveal elements that are in the viewport
+                if (elementTop < window.innerHeight - elementVisible && elementBottom > 0) {
+                    element.classList.add('active');
+                } else {
+                    // Optional: Hide elements again when scrolling up
+                    // element.classList.remove('active');
+                }
+            });
+
+            ticking = false;
+        }
+
+        function onScroll() {
+            lastScrollY = window.scrollY;
+            if (!ticking) {
+                window.requestAnimationFrame(updateScroll);
+                ticking = true;
+            }
+        }
+
+        window.addEventListener('scroll', onScroll, { passive: true });
+        window.addEventListener('resize', onScroll, { passive: true });
+        
+        // Initial check
+        updateScroll();
+
+        // Add perspective distortion effect for UI preview
+        const uiPreviews = document.querySelectorAll('.ui-preview');
+        
+        uiPreviews.forEach(preview => {
+            const img = preview.querySelector('img');
+            
+            preview.addEventListener('mousemove', (e) => {
+                const rect = preview.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                // Calculate rotation based on mouse position
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                // Calculate rotation angles (max 10 degrees)
+                const rotateY = ((x - centerX) / centerX) * 10;
+                const rotateX = ((centerY - y) / centerY) * 10;
+                
+                // Apply the transform
+                img.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
+                preview.querySelector('::after').style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.05, 1.05, 1.05)`;
+            });
+            
+            preview.addEventListener('mouseleave', () => {
+                img.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+                preview.querySelector('::after').style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+            });
+        });
+
+        // Add animation delay to feature cards
+        document.querySelectorAll('.feature-card').forEach((card, index) => {
+            card.style.setProperty('--card-index', index);
+        });
+
+        // Parallax effect for hero section
+        window.addEventListener('scroll', () => {
+            const hero = document.querySelector('.hero');
+            const scrolled = window.pageYOffset;
+            hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+        });
+
+        // Enhanced hover effect for feature cards
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+                
+                const rotateX = (y - centerY) / 10;
+                const rotateY = (centerX - x) / 10;
+                
+                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(10px)`;
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
+            });
+        });
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html> 
